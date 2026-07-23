@@ -53,8 +53,27 @@ def save_checkpoint(
         log.info("★ new best val=%.4f @ epoch %d -> best.pt", val_loss, epoch)
 
 
+def _remap_legacy_keys(state: dict, model: nn.Module) -> dict:
+    """Map checkpoints from the original notebook code onto the refactored model.
+
+    The notebook's student held the vision backbone as ``self.vit``; the package
+    wraps it as ``self.encoder.backbone``. Everything else is name-identical.
+    """
+    expects_wrapped = any(k.startswith("encoder.backbone.") for k in model.state_dict())
+    has_legacy = any(k.startswith("vit.") for k in state)
+    if expects_wrapped and has_legacy:
+        log.info("Legacy checkpoint detected: remapping 'vit.*' -> 'encoder.backbone.*'")
+        state = {
+            ("encoder.backbone." + k[len("vit.") :] if k.startswith("vit.") else k): v
+            for k, v in state.items()
+        }
+    return state
+
+
 def load_student_weights(model: nn.Module, path: str | Path, device: str | torch.device = "cpu") -> None:
     ckpt = torch_load(path, map_location=device)
     state = ckpt["model_state"] if isinstance(ckpt, dict) and "model_state" in ckpt else ckpt
-    unwrap(model).load_state_dict(state)
+    inner = unwrap(model)
+    state = _remap_legacy_keys(state, inner)
+    inner.load_state_dict(state)
     log.info("Loaded student weights from %s", path)
