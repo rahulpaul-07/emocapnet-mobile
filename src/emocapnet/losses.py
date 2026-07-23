@@ -98,11 +98,11 @@ def combined_loss(
         + cfg.feat_weight * feat
     )
     parts = {
-        "lm": float(hard_lm),
+        "lm": float(hard_lm.detach()),
         "kd": kd_val,
-        "vad": float(vd),
-        "emo": float(em),
-        "con": float(con),
-        "ft": float(feat),
+        "vad": float(vd.detach()),
+        "emo": float(em.detach()),
+        "con": float(con.detach()),
+        "ft": float(feat.detach()),
     }
     return total, parts

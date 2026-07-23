@@ -17,6 +17,7 @@ with the torch decoder.
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 from pathlib import Path
@@ -31,6 +32,25 @@ from emocapnet.training.schedule import unwrap
 log = logging.getLogger(__name__)
 
 OPSET = 14
+
+
+def _onnx_export(module: nn.Module, args: tuple, path: str, **kw) -> None:
+    """Version-robust ``torch.onnx.export``.
+
+    torch >= 2.6 defaults to the dynamo exporter (needs ``onnxscript``); we prefer
+    the legacy TorchScript exporter when available for stable dynamic_axes
+    semantics, falling back to the dynamo path if legacy is removed. Older torch
+    has no ``dynamo`` kwarg at all. Either way, ``verify_parity`` is the arbiter.
+    """
+    if "dynamo" in inspect.signature(torch.onnx.export).parameters:
+        try:
+            torch.onnx.export(module, args, path, dynamo=False, **kw)
+            return
+        except Exception as e:
+            log.warning("Legacy ONNX exporter failed (%r) -> trying dynamo exporter", e)
+        torch.onnx.export(module, args, path, dynamo=True, **kw)
+    else:
+        torch.onnx.export(module, args, path, **kw)
 
 
 class _EncoderWrapper(nn.Module):
@@ -73,7 +93,7 @@ def export_onnx(model, cfg: Config, out_dir: str | Path, image_size: int, sample
     ids = torch.tensor([[sample_vocab_id, sample_vocab_id + 1]], dtype=torch.long)
 
     enc_path, dec_path = out / "encoder.onnx", out / "decoder.onnx"
-    torch.onnx.export(
+    _onnx_export(
         _EncoderWrapper(inner),
         (pv, vad),
         str(enc_path),
@@ -87,7 +107,7 @@ def export_onnx(model, cfg: Config, out_dir: str | Path, image_size: int, sample
             "spatial_kv": {0: "batch"},
         },
     )
-    torch.onnx.export(
+    _onnx_export(
         _DecoderWrapper(inner),
         (ids, prefix, spatial_kv),
         str(dec_path),

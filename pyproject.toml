@@ -49,6 +49,7 @@ serve = [
 onnx = [
     "onnx>=1.15",
     "onnxruntime>=1.17",
+    "onnxscript>=0.1",  # required by torch>=2.6's ONNX exporter
 ]
 
 [project.scripts]
