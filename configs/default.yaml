@@ -1,0 +1,31 @@
+# Default training configuration.
+# Point captions_csv / teacher_ckpt / image_dirs at your data, or override on the CLI:
+#   emocapnet train --config configs/default.yaml -o teacher_ckpt=/path/to/best.pt
+
+captions_csv: data/captions.csv
+teacher_ckpt: ""            # path to trained EmoCapNet v3 best.pt; empty = no distillation
+image_dirs:
+  - data/images
+pretrain_captions_csv: ""   # optional Flickr30k-style (image, caption) file for Stage 0
+work_dir: runs/default
+
+# Student architecture
+student_encoder_type: clip  # clip | mobilevit | tiny
+student_clip_model: wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M
+student_vit: apple/mobilevit-small
+student_decoder: distilgpt2
+ultralight: false
+
+# Training
+epochs: 12
+batch_size: 16
+grad_accum: 2
+learning_rate: 5.0e-5
+num_workers: 4
+pretrain_epochs: 3
+
+# Distillation
+distill_alpha: 0.6
+distill_temp: 2.0
+distill_vad_emo: true
+feat_weight: 0.5

@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emocapnet-mobile"
+version = "1.0.0"
+description = "Emotion-controllable image captioning, distilled and quantized for mobile deployment"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Rahul Paul", email = "paulrahulami@gmail.com" }]
+keywords = ["image-captioning", "knowledge-distillation", "quantization", "mobile", "emotion"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "transformers>=4.38",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scikit-learn>=1.3",
+    "Pillow>=10.0",
+    "tqdm>=4.66",
+    "nltk>=3.8",
+    "rouge-score>=0.1.2",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "pre-commit>=3.6",
+]
+eval = ["pycocoevalcap"]
+serve = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",
+]
+onnx = [
+    "onnx>=1.15",
+    "onnxruntime>=1.17",
+]
+
+[project.scripts]
+emocapnet = "emocapnet.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501", "B905", "SIM108"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI's dependency-injection idiom uses calls (File/Form) in defaults.
+"src/emocapnet/serving/app.py" = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "slow: long-running end-to-end tests",
+    "network: tests that download pretrained weights",
+]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+no_strict_optional = true

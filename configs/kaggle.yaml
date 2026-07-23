@@ -1,0 +1,18 @@
+# Kaggle environment (original notebook paths).
+captions_csv: /kaggle/input/datasets/ncprakash/pretrained-coco/streaming_results.csv
+teacher_ckpt: /kaggle/input/datasets/ncprakash/pre-weights/best.pt
+image_dirs:
+  - /kaggle/input/datasets/ncprakash/flickr/10K_images/part_1
+  - /kaggle/input/datasets/ncprakash/flickr/10K_images/part_2
+  - /kaggle/input/datasets/ncprakash/flickr/10K_images/part_3
+  - /kaggle/input/datasets/ncprakash/flickr/10K_images/part_4
+pretrain_captions_csv: /kaggle/input/datasets/ncprakash/flicker-30k-captions/results.csv
+work_dir: /kaggle/working
+
+student_encoder_type: clip
+student_decoder: distilgpt2
+epochs: 12
+batch_size: 16
+grad_accum: 2
+num_workers: 4
+distill_alpha: 0.6

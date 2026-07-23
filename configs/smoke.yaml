@@ -1,0 +1,19 @@
+# Hermetic smoke configuration: tiny encoder + scratch decoder, synthetic data.
+# Generate data first: emocapnet make-synthetic --out data/synthetic
+captions_csv: data/synthetic/captions.csv
+image_dirs:
+  - data/synthetic/images
+work_dir: runs/smoke
+
+student_encoder_type: tiny
+ultralight: true
+epochs: 1
+pretrain_epochs: 0
+batch_size: 8
+grad_accum: 1
+num_workers: 0
+max_length: 24
+prefix_len: 4
+hard_max_length: 10
+min_length: 2
+distill_alpha: 0.0
