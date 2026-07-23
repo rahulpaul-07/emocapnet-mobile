@@ -2,7 +2,7 @@
 
 **Emotion-controllable image captioning, compressed for on-device deployment via knowledge distillation + INT8 quantization.**
 
-[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
+[![CI](https://github.com/rahulpaul-07/emocapnet-mobile/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulpaul-07/emocapnet-mobile/actions)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: ruff](https://img.shields.io/badge/style-ruff-261230)](pyproject.toml)
