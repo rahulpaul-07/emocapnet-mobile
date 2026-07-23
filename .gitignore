@@ -14,10 +14,10 @@ venv/
 .coverage
 htmlcov/
 
-# ML artifacts
-runs/
-data/
-checkpoints/
+# ML artifacts (root-anchored so src/emocapnet/data is NOT ignored)
+/runs/
+/data/
+/checkpoints/
 *.pt
 *.onnx
 *.zip
